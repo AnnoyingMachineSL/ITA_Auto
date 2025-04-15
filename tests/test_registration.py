@@ -14,5 +14,3 @@ class TestRegistration:
         page.fill_password_field(password)
         page.fill_confirm_field(password)
         page.check_profile_page()
-        time.sleep(2)
-        #expect(page).to_have_url('http://34.141.58.52:8080/#/profile')

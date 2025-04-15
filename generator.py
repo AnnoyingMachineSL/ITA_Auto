@@ -10,3 +10,12 @@ def random_email():
 
 def random_password():
     return random_name() + ''.join([random.choice(string.digits) for i in range(4)])
+
+def random_age():
+    return str(random.choice(range(0, 10)))
+
+def random_type():
+    return random.choice(['dog', 'cat', 'reptile', 'hamster', 'parrot'])
+
+def random_gender():
+    return random.choice(['Female', 'Male'])

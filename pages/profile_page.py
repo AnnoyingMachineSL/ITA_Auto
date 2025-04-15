@@ -11,10 +11,8 @@ class ProfilePage(BasePage):
         self.PET_TYPE = self.page.locator('//*[@id="typeSelector"]')
         self.PET_GENDER = self.page.locator('//*[@id="genderSelector"]')
         self.SUBMIT_PAGE = self.page.locator('//*[@id="app"]/main/div/div/form/div/div[2]/div[3]/button[1]')
-
+        self.PROFILE_BUTTON = self.page.locator('//*[@id="app"]/header/div/ul/li[1]/a')
         self.PET_UNITS = self.page.locator(ProfilePageConfig.PET_UNIT)
-        self.DELETE_BUTTON = self.page.get_by_text('Delete')
-        self.EDIT_BUTTON = self.page.locator(ProfilePageConfig.EDIT_BUTTON_LOCATOR)
 
     def click_add_pet_button(self):
         self.ADD_PET_BUTTON.click()
@@ -34,10 +32,17 @@ class ProfilePage(BasePage):
         self.PET_GENDER.click()
 
     def click_pet_gender(self, gender):
-        self.page.get_by_text(gender).click()
+        self.page.get_by_text(gender).nth(0).click()
 
     def click_submit_button(self):
         self.SUBMIT_PAGE.click()
 
-    def find_pet_unit(self):
-        return self.page.locator(ProfilePageConfig.PET_UNIT).all()
+    def click_profile_button(self):
+        self.PROFILE_BUTTON.click()
+
+    def delete_pet_from_list(self, num):
+        self.PET_UNITS.nth(num).get_by_text('Delete').click()
+
+    def click_yes(self):
+        self.page.get_by_text('Yes').click()
+

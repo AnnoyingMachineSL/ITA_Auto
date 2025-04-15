@@ -9,4 +9,3 @@ class TestLogin:
         login_page.open_page(LoginPageConfig.LOGIN_PAGE_URL)
         login_page.fill_login_field(LoginPageConfig.LOGIN)
         login_page.fill_password_field(LoginPageConfig.PASSWORD)
-        time.sleep(2)

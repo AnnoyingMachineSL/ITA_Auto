@@ -6,5 +6,5 @@ class LoginPageConfig:
 
 class ProfilePageConfig:
     EDIT_BUTTON_LOCATOR = '//button[@class="p-button p-component"]'
-    DELETE_BUTTON_LOCATOR = 'class="p-button p-componen//button[@t p-button-danger"]'
+    DELETE_BUTTON_LOCATOR = '//div[@class="p-button p-component p-button-danger"]'
     PET_UNIT = '//div[@class="product-list-item"]'
