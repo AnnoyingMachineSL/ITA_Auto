@@ -3,3 +3,8 @@ class LoginPageConfig:
     LOGIN = 'tonga@qa.qa'
     PASSWORD = 'qwe123'
 
+
+class ProfilePageConfig:
+    EDIT_BUTTON_LOCATOR = '//button[@class="p-button p-component"]'
+    DELETE_BUTTON_LOCATOR = 'class="p-button p-componen//button[@t p-button-danger"]'
+    PET_UNIT = '//div[@class="product-list-item"]'

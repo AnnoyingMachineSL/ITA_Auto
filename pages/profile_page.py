@@ -1,4 +1,5 @@
 from pages.base_page import BasePage
+from config import ProfilePageConfig
 
 
 class ProfilePage(BasePage):
@@ -11,6 +12,9 @@ class ProfilePage(BasePage):
         self.PET_GENDER = self.page.locator('//*[@id="genderSelector"]')
         self.SUBMIT_PAGE = self.page.locator('//*[@id="app"]/main/div/div/form/div/div[2]/div[3]/button[1]')
 
+        self.PET_UNITS = self.page.locator(ProfilePageConfig.PET_UNIT)
+        self.DELETE_BUTTON = self.page.get_by_text('Delete')
+        self.EDIT_BUTTON = self.page.locator(ProfilePageConfig.EDIT_BUTTON_LOCATOR)
 
     def click_add_pet_button(self):
         self.ADD_PET_BUTTON.click()
@@ -35,3 +39,5 @@ class ProfilePage(BasePage):
     def click_submit_button(self):
         self.SUBMIT_PAGE.click()
 
+    def find_pet_unit(self):
+        return self.page.locator(ProfilePageConfig.PET_UNIT).all()
