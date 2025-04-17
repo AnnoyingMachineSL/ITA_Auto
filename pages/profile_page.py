@@ -1,3 +1,5 @@
+from playwright.sync_api import expect
+
 from pages.base_page import BasePage
 from config import ProfilePageConfig
 
@@ -13,6 +15,7 @@ class ProfilePage(BasePage):
         self.SUBMIT_PAGE = self.page.locator('//*[@id="app"]/main/div/div/form/div/div[2]/div[3]/button[1]')
         self.PROFILE_BUTTON = self.page.locator('//*[@id="app"]/header/div/ul/li[1]/a')
         self.PET_UNITS = self.page.locator(ProfilePageConfig.PET_UNIT)
+        self.DELETE_MESSAGE = self.page.get_by_text('Pet record has been removed.')
 
     def click_add_pet_button(self):
         self.ADD_PET_BUTTON.click()
@@ -45,4 +48,8 @@ class ProfilePage(BasePage):
 
     def click_yes(self):
         self.page.get_by_text('Yes').click()
+
+    def find_delete_message(self):
+        expect(self.DELETE_MESSAGE).to_be_visible()
+
 
