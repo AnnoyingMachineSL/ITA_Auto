@@ -12,4 +12,4 @@ import re
 # у которых ничего не возвращается
 
 b = 'a@gmail.com'
-print(re.findall('@gmail.com', b))
+print(re.findall('.*@gmail.com', b))

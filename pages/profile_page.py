@@ -1,7 +1,6 @@
 from playwright.sync_api import expect
 
 from pages.base_page import BasePage
-from config import ProfilePageConfig
 
 
 class ProfilePage(BasePage):
@@ -14,8 +13,12 @@ class ProfilePage(BasePage):
         self.PET_GENDER = self.page.locator('//*[@id="genderSelector"]')
         self.SUBMIT_PAGE = self.page.locator('//*[@id="app"]/main/div/div/form/div/div[2]/div[3]/button[1]')
         self.PROFILE_BUTTON = self.page.locator('//*[@id="app"]/header/div/ul/li[1]/a')
-        self.PET_UNITS = self.page.locator(ProfilePageConfig.PET_UNIT)
+        self.PET_UNITS = self.page.locator('//div[@class="product-list-item"]')
         self.DELETE_MESSAGE = self.page.get_by_text('Pet record has been removed.')
+        self.EDIT_BUTTON = self.page.locator('//button[@class="p-button p-component"]')
+        self.DELETE_BUTTON_LOCATOR = self.page.locator('//div[@class="p-button p-component p-button-danger"]')
+        self.NAME_FIELD_ERROR_MESSAGE = self.page.get_by_text('This field is email')
+        self.PET_TYPE_ERROR_MESSAGE = self.page.get_by_text('This field is required')
 
     def click_add_pet_button(self):
         self.ADD_PET_BUTTON.click()
@@ -51,5 +54,14 @@ class ProfilePage(BasePage):
 
     def find_delete_message(self):
         expect(self.DELETE_MESSAGE).to_be_visible()
+
+    def check_name_error_message(self):
+        expect(self.NAME_FIELD_ERROR_MESSAGE).to_be_visible()
+
+    def check_pet_type_error_message(self):
+        expect(self.PET_TYPE_ERROR_MESSAGE).to_be_visible()
+
+    def wait_pet_unit(self):
+        expect(self.PET_UNITS.nth(0)).to_be_visible()
 
 
