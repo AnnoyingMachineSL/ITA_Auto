@@ -6,7 +6,8 @@ from playwright.sync_api import expect
 from pages.profile_page import ProfilePage
 import random
 
-@allure.title('Positive Delete Per')
+
+@allure.title('[Positive test] Delete Pet')
 @allure.severity(allure.severity_level.NORMAL)
 class TestDeletePet:
 
@@ -32,8 +33,3 @@ class TestDeletePet:
 
         with allure.step('Check the delete message'):
             page.find_delete_message()
-
-
-
-
-

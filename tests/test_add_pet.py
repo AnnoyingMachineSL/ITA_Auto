@@ -5,7 +5,7 @@ from pages.profile_page import ProfilePage
 import time
 
 
-@allure.title('Add pet test')
+@allure.title('[Positive Test] Add pet')
 @allure.severity(allure.severity_level.CRITICAL)
 class TestAddPet:
 
@@ -45,7 +45,7 @@ class TestAddPet:
             page.click_profile_button()
             time.sleep(0.1)
 
-@allure.title('Negative Add Pet Test')
+@allure.title('[Negative Test] Add Pet')
 @allure.severity(allure.severity_level.CRITICAL)
 class TestAddPetNegative:
 

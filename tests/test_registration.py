@@ -6,11 +6,11 @@ from pages.registration_page import RegistrationPage
 import time
 
 
-@allure.title('Registration Test')
+@allure.title('[Positive Test] Registration')
 @allure.severity(allure.severity_level.CRITICAL)
 class TestRegistration:
     @pytest.mark.positive
-    @allure.title('Correct data to registration')
+    @allure.title('Correct data for registration')
     @allure.description('Registration using correct format of login and password')
     def test_registration(self, page):
         page = RegistrationPage(page)
@@ -37,7 +37,7 @@ class TestRegistration:
             page.check_profile_page()
 
 
-@allure.title('Negative Registration Test')
+@allure.title('[Negative Test] Registration')
 @allure.severity(allure.severity_level.CRITICAL)
 class TestRegistrationNegative:
 
