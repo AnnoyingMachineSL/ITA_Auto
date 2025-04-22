@@ -48,7 +48,7 @@ class PetsApi:
     def post_pet_image(self, email: str, password: str, pet_id: int) -> json:
         authorization_data, status_code = self.login(email, password)
         headers = {'Authorization': f'Bearer {authorization_data["token"]}'}
-        img = open('pic.jpg', 'rb')
+        img = open('images/pic.jpg', 'rb')
         files = {'pic': img}
 
         res = requests.post(self.base_url + f'pet/{pet_id}/image', headers=headers, files=files)
