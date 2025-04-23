@@ -4,7 +4,7 @@ import pytest
 import generator
 from api import PetsApi
 from config import LoginPageSecond, LoginPageConfig
-import logging
+
 
 
 @allure.title('[Positive] Api Tests')
@@ -19,6 +19,7 @@ class TestApi:
         with allure.step(f'Authorization by email:{email} and password:{password}'):
             authorization_data, status_code = PetsApi().login(email=email, password=LoginPageSecond.PASSWORD)
         assert status_code == 200
+
 
     @allure.title('Api Make new pet test')
     @pytest.mark.positive
@@ -40,6 +41,7 @@ class TestApi:
         assert status_code == 200
         assert isinstance(new_pet_id['id'], int)
 
+
     @allure.title('Api Make new pet test')
     @pytest.mark.positive
     @allure.severity(allure.severity_level.NORMAL)
@@ -54,6 +56,7 @@ class TestApi:
                                                                       len_pet_list=len_pet_list)
         assert pets_list_status_code == 200
         assert len(pets_list['list']) == len_pet_list
+
 
     @allure.title('Api Delete pet')
     @pytest.mark.positive
@@ -70,6 +73,7 @@ class TestApi:
             with allure.step(f'Delete pet by id {pet_id}'):
                 _, delete_status_code = PetsApi().delete_pet(email=email, password=password, pet_id=pet_id)
             assert delete_status_code == 200
+
 
     @allure.title('Api Update info about pet')
     @pytest.mark.positive
@@ -123,6 +127,7 @@ class TestApiNegative:
             authorization_data, status_code = PetsApi().login(email=email, password=password)
         assert status_code == 400
 
+
     @allure.title('Authorization by incorrect email')
     @pytest.mark.negative
     @allure.severity(allure.severity_level.CRITICAL)
@@ -132,6 +137,7 @@ class TestApiNegative:
         with allure.step(f'Authorization by incorrect email:{email}'):
             authorization_data, status_code = PetsApi().login(email=email, password=password)
         assert status_code == 400
+
 
     @allure.title('Get pets list by incorrect len')
     @pytest.mark.negative
@@ -144,6 +150,7 @@ class TestApiNegative:
             pets_list, pets_list_status_code = PetsApi().get_pet_list(email=email, password=password,
                                                                       len_pet_list=len_pet_list)
         assert pets_list_status_code == 422
+
 
     @allure.title('Delete pet by incorrect id')
     @pytest.mark.negative
@@ -158,6 +165,7 @@ class TestApiNegative:
                 assert delete_status_code == 405
             else:
                 assert delete_status_code == 422
+
 
     @allure.title('Delete pet by id from other user')
     @pytest.mark.negative
