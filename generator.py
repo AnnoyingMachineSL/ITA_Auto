@@ -1,5 +1,6 @@
 import random
 import string
+import json
 
 
 def random_name():
@@ -19,3 +20,7 @@ def random_type():
 
 def random_gender():
     return random.choice(['Female', 'Male'])
+
+def extract_pet_id(pets_list: json):
+    pets = pets_list['list']
+    return [pet['id'] for pet in pets]
