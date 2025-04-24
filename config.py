@@ -1,8 +1,12 @@
+from dotenv import load_dotenv
+import os
+
 class LoginPageConfig:
-    LOGIN_PAGE_URL = 'http://34.141.58.52:8080/#/login'
-    LOGIN = 'tonga@qa.qa'
-    PASSWORD = 'qwe123'
+    LOGIN_PAGE_URL = os.getenv('LOGIN_PAGE_URL')
+    LOGIN = os.getenv('LOGIN_1')
+    PASSWORD = os.getenv('PASSWORD')
 
 class LoginPageSecond:
-    LOGIN = 'anima@mail.com'
-    PASSWORD = 'qwe123'
+    LOGIN = os.getenv('LOGIN_2')
+    PASSWORD = os.getenv('PASSWORD')
+

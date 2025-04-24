@@ -3,8 +3,9 @@ import pytest
 
 import generator
 from api import PetsApi
+from client import Client
 from config import LoginPageSecond, LoginPageConfig
-
+from models.pet_models import PetResponseModel, validate_response, LoginResponseModel, LoginModel
 
 
 @allure.title('[Positive] Api Tests')
@@ -16,9 +17,18 @@ class TestApi:
     @pytest.mark.parametrize('email', [LoginPageSecond.LOGIN])
     @pytest.mark.parametrize('password', [LoginPageSecond.PASSWORD])
     def test_login(self, email: str, password: str):
-        with allure.step(f'Authorization by email:{email} and password:{password}'):
-            authorization_data, status_code = PetsApi().login(email=email, password=LoginPageSecond.PASSWORD)
-        assert status_code == 200
+        responce = Client().login(request=LoginModel(
+                                  email=LoginPageSecond.LOGIN,
+                                  password=LoginPageSecond.PASSWORD),
+                                  expected_model=LoginResponseModel())
+        # request = LoginModel(
+        #     email=LoginPageSecond.LOGIN,
+        #     password=LoginPageSecond.PASSWORD
+        # )
+        # with allure.step(f'Authorization by email:{email} and password:{password}'):
+        #     response = PetsApi().login(request)
+        # validate_response(response, LoginResponseModel(), 200)
+        #assert status_code == 200
 
 
     @allure.title('Api Make new pet test')
@@ -38,6 +48,7 @@ class TestApi:
             new_pet_id, status_code = PetsApi().post_pet(email=email, password=password,
                                                          name=name, pet_type=pet_type,
                                                          age=age, gender=gender)
+        expected_model = PetResponseModel()
         assert status_code == 200
         assert isinstance(new_pet_id['id'], int)
 
