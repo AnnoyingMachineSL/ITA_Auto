@@ -113,6 +113,25 @@ class TestApi:
                 assert pet_info['gender'] == pet_gender
 
 
+    @allure.title('Api Like pet')
+    @pytest.mark.positive
+    @allure.severity(allure.severity_level.MINOR)
+    @pytest.mark.parametrize('email', [LoginPageSecond.LOGIN])
+    @pytest.mark.parametrize('password', [LoginPageSecond.PASSWORD])
+    @pytest.mark.parametrize('len_pet_list', [3])
+    def test_like_pet(self, email: str, password: str, len_pet_list: int):
+
+        with allure.step(f'Get list of pets for user: {email}'):
+            pets_list, pets_list_status_code = PetsApi().get_pet_list(email=email, password=password, len_pet_list=len_pet_list)
+        pets_ids = generator.extract_pet_id(pets_list)
+
+
+        for pet_id in pets_ids:
+            with allure.step(f'Put like for pet: {pet_id}'):
+                _, pet_like_status_code = PetsApi().like_pet(email=email, password=password, pet_id=pet_id)
+                assert pet_like_status_code == 200 or pets_list_status_code == 403
+
+
 
 @allure.title('[Negative] Api negative tests')
 class TestApiNegative:

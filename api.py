@@ -69,12 +69,14 @@ class PetsApi:
         res = requests.post(self.base_url + 'pets', data=json.dumps(data), headers=headers)
         return res.json(), res.status_code
 
+
     def delete_pet(self, email: str, password: str, pet_id: int):
         authorization_data, status_code = self.login(email=email, password=password)
         headers = dict(Authorization=f'Bearer {authorization_data["token"]}')
 
         res = requests.delete(url=self.base_url + f'pet/{pet_id}', headers=headers)
         return res.json(), res.status_code
+
 
     def update_pet(self, email: str, password: str, pet_id: int,
                    pet_name: str, pet_type: str, pet_age: int, pet_gender: str):
@@ -98,10 +100,18 @@ class PetsApi:
         return res.json(), res.status_code
 
 
+    def like_pet(self,  email: str, password: str, pet_id: int):
+        authorization_data, status_code = self.login(email=email, password=password)
+        headers = dict(Authorization=f'Bearer {authorization_data["token"]}')
 
-# pt = PetsApi()
+        res = requests.put(url=self.base_url + f'pet/{pet_id}/like', headers=headers)
+        return res.json(), res.status_code
+
+
+#pt = PetsApi()
 # print(pt.get(email=LoginPageSecond.LOGIN, password=LoginPageSecond.PASSWORD,
 #                     pet_id=34028, pet_name='Katana', pet_type='sword', pet_age=999, pet_gender='Female'))
+#print(pt.like_pet(email=LoginPageSecond.LOGIN, password=LoginPageSecond.PASSWORD, pet_id=34361))
 # print(pt.get_pet(email=LoginPageSecond.LOGIN, password=LoginPageSecond.PASSWORD, pet_id=34028))
 # print(generator.extract_pet_id(pets_list))
 #pprint(pt.delete_pet(email=LoginPageSecond.LOGIN, password=LoginPageSecond.PASSWORD, pet_id=33776))
