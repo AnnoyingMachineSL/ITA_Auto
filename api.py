@@ -16,6 +16,8 @@ class PetsApi:
         return res.json(), res.status_code
 
 
+    #def post_pet(self, request):
+
     def post_pet(self, email: str, password: str,
                  name: str, pet_type: str,
                  age: int, gender: str) -> json:

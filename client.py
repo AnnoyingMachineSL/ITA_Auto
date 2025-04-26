@@ -2,25 +2,26 @@ import allure
 import requests
 
 from allure_helper import AllureHelper
-from models.pet_models import LoginModel, validate_response, LoginResponseModel
-from dotenv import load_dotenv
+from models.pet_models import LoginModel, LoginResponseModel, CreatePetModel, PetResponseModel
+from valdate_response import ValidateResponse
+#from dotenv import load_dotenv
 import os
 
 
 class ClientApi:
     def __init__(self):
-        self.base_url = os.getenv('BASE_URL')
+        self.base_url = 'http://34.141.58.52:8000/'
         self.session =self._initialize_session()
 
     @staticmethod
     def _initialize_session():
         return requests.Session()
 
-    def request(self, method: str, url: str, json):
+    def request(self, method: str, url: str, json, headers:str = None):
         response = self.session.request(method=method,
                                         url=self.base_url + url,
+                                        headers=headers,
                                         json=json)
-        AllureHelper().enrich_allure(response)
         return response
 
 
@@ -30,5 +31,13 @@ class Client(ClientApi):
 
     @allure.step('POST /login')
     def login(self, request: LoginModel, expected_model: LoginResponseModel, status_code: int = 200):
-        response = self.request(method='post', url='/login', json=request.model_dump())
-        return validate_response(response=response, model=expected_model, status_code=status_code)
+        response = self.request(method='post', url='login', json=request.model_dump())
+        return ValidateResponse.validate_response(response=response, model=expected_model, status_code=status_code)
+
+
+    @allure.step('POST /pet')
+    def post_pet(self, request: CreatePetModel, expected_model: PetResponseModel, headers, status_code: int = 200):
+        response = self.request(method='post', url='pet', headers=headers, json=request.model_dump())
+        return ValidateResponse.validate_response(response=response, model=expected_model,
+                                                  status_code=status_code)
+

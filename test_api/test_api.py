@@ -1,11 +1,12 @@
 import allure
 import pytest
+from urllib3 import request
 
 import generator
 from api import PetsApi
 from client import Client
 from config import LoginPageSecond, LoginPageConfig
-from models.pet_models import PetResponseModel, validate_response, LoginResponseModel, LoginModel
+from models.pet_models import PetResponseModel, LoginResponseModel, LoginModel, CreatePetModel
 
 
 @allure.title('[Positive] Api Tests')
@@ -13,28 +14,15 @@ class TestApi:
 
     @allure.title('Api Authorization test')
     @pytest.mark.positive
+    @pytest.mark.API
     @allure.severity(allure.severity_level.CRITICAL)
     @pytest.mark.parametrize('email', [LoginPageSecond.LOGIN])
     @pytest.mark.parametrize('password', [LoginPageSecond.PASSWORD])
     def test_login(self, email: str, password: str):
-        responce = Client().login(request=LoginModel(
-                                  email=LoginPageSecond.LOGIN,
-                                  password=LoginPageSecond.PASSWORD),
-                                  expected_model=LoginResponseModel())
-        # request = LoginModel(
-        #     email=LoginPageSecond.LOGIN,
-        #     password=LoginPageSecond.PASSWORD
-        # )
-        # with allure.step(f'Authorization by email:{email} and password:{password}'):
-        #     response = PetsApi().login(request)
-        # validate_response(response, LoginResponseModel(), 200)
-        #assert status_code == 200
+        login_model = LoginModel(email=email, password=password)
+        response = Client().login(request=login_model, expected_model=LoginResponseModel())
+        return response
 
-
-    @allure.title('Api Make new pet test')
-    @pytest.mark.positive
-    @allure.severity(allure.severity_level.NORMAL)
-    @pytest.mark.dependency(name='test_post_pet')
     @pytest.mark.parametrize('email', [LoginPageSecond.LOGIN])
     @pytest.mark.parametrize('password', [LoginPageSecond.PASSWORD])
     @pytest.mark.parametrize('name', ['aas', 'bbs', 'qwe'])
@@ -43,14 +31,22 @@ class TestApi:
     @pytest.mark.parametrize('gender', ['male', 'female'])
     def test_post_pet(self, email: str, password: str,
                       name: str, pet_type: str, age: int, gender: str):
-        with allure.step(f'Create new pet for user with:{email} and password:{password}.'
-                         f'Pet data: name:{name}, pet_type:{pet_type}, age:{age}, gender:{gender}'):
-            new_pet_id, status_code = PetsApi().post_pet(email=email, password=password,
-                                                         name=name, pet_type=pet_type,
-                                                         age=age, gender=gender)
-        expected_model = PetResponseModel()
-        assert status_code == 200
-        assert isinstance(new_pet_id['id'], int)
+
+        login_model = LoginModel(email=email, password=password)
+        authorization_response = Client().login(request=login_model,expected_model=LoginResponseModel())
+        headers =  headers = dict(Authorization=f'Bearer {authorization_response.token}')
+        pet_info_model = CreatePetModel(
+            id=0,
+            name=name,
+            type=pet_type,
+            age=age,
+            gender=gender,
+            owner_id=authorization_response.id)
+
+        created_pet_response = Client().post_pet(request = pet_info_model,
+                                                 expected_model=PetResponseModel(),
+                                                 headers=headers)
+        return created_pet_response
 
 
     @allure.title('Api Make new pet test')
@@ -221,3 +217,8 @@ class TestApiNegative:
 
             # предполагаю, что обрадотка такого случая должна отдавать 403
             assert delete_status_code == 403
+
+
+at = TestApi()
+print(at.test_login(email=LoginPageSecond.LOGIN,
+              password=LoginPageSecond.PASSWORD))
