@@ -10,12 +10,12 @@ class LoginModel(BaseModel):
 
 
 class CreatePetModel(BaseModel):
-    id: Optional[int] = None
-    name: Optional[str] = None
-    type: Optional[str] = None
-    age: Optional[int] = None
-    gender: Optional[str] = None
-    owner_id: Optional[int] = None
+    id: Optional[int]
+    name: Optional[str]
+    type: Optional[str]
+    age: Optional[int]
+    gender: Optional[str]
+    owner_id: Optional[int]
     pic: Optional[str] = 'string'
     owner_name: Optional[str] = 'string'
     likes_count: Optional[int] = 0
@@ -47,6 +47,33 @@ class PetInfoResponseModel(BaseModel):
     pet: CreatePetModel
     comments: Optional[list]
 
+
+#Negative response models
+
+class NegativeLoginResponseModel(BaseModel):
+    detail: Optional[str] = 'Username is taken or pass issue'
+
+class NegativePetsListModel(BaseModel):
+    detail: Optional[list] = [
+        {loc: Optional[]}
+    ]
+    # "detail": [
+    #     {
+    #         "loc": [
+    #             "body",
+    #             23
+    #         ],
+    #         "msg": "Expecting value: line 3 column 9 (char 23)",
+    #         "type": "value_error.jsondecode",
+    #         "ctx": {
+    #             "msg": "Expecting value",
+    #             "doc": "{\n  \"skip\": 0,\n  \"num\":'3',\n  \"user_id\": 5299\n}",
+    #             "pos": 23,
+    #             "lineno": 3,
+    #             "colno": 9
+    #         }
+    #     }
+    # ]
 
 # class OuterResponseModel(BaseModel):
 #     class_ = Optional[str] = Field(..., alias='class')

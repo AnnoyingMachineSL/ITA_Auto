@@ -1,9 +1,11 @@
+from typing import Union
+
 import allure
 import requests
 
 from allure_helper import AllureHelper
 from models.pet_models import LoginModel, LoginResponseModel, CreatePetModel, PetResponseModel, GetPetsListModel, \
-    PetListResponseModel
+    PetListResponseModel, NegativeLoginResponseModel
 from valdate_response import ValidateResponse
 # from dotenv import load_dotenv
 import os
@@ -31,7 +33,8 @@ class Client(ClientApi):
         super().__init__()
 
     @allure.step('POST /login')
-    def login(self, request: LoginModel, expected_model: LoginResponseModel, status_code: int = 200):
+    def login(self, request: LoginModel, expected_model: Union[LoginResponseModel, NegativeLoginResponseModel],
+              status_code: int = 200):
         response = self.request(method='post', url='login', json=request.model_dump())
         return ValidateResponse.validate_response(response=response, model=expected_model, status_code=status_code)
 

@@ -7,7 +7,7 @@ from api import PetsApi
 from client import Client
 from config import LoginPageSecond, LoginPageConfig
 from models.pet_models import PetResponseModel, LoginResponseModel, LoginModel, CreatePetModel, GetPetsListModel, \
-    PetListResponseModel, PetInfoResponseModel
+    PetListResponseModel, PetInfoResponseModel, NegativeLoginResponseModel
 from valdate_response import ValidateResponse
 
 
@@ -140,8 +140,10 @@ class TestApi:
             expected_pet_data = PetInfoResponseModel(pet=pet_info_model, comments=[])
             ValidateResponse.validate_response(response=actual_pet_data, model=expected_pet_data)
 
-    @allure.title('Api Like pet')
+
+    @allure.title('[Api test] Like pet')
     @pytest.mark.positive
+    @pytest.mark.API
     @allure.severity(allure.severity_level.MINOR)
     @pytest.mark.parametrize('email', [LoginPageSecond.LOGIN])
     @pytest.mark.parametrize('password', [LoginPageSecond.PASSWORD])
@@ -157,9 +159,32 @@ class TestApi:
             Client().like_pet(pet_id=pet_id, headers=headers)
 
 
+@allure.title('[Negative] Api Tests')
+class TestApiNegative:
 
+    @allure.title('[Api test] Authorization by incorrect data')
+    @pytest.mark.negative
+    @pytest.mark.API
+    @allure.severity(allure.severity_level.CRITICAL)
+    @pytest.mark.parametrize('email', [LoginPageSecond.LOGIN, '', '!@#', '@mail.com', 'qwe@qwe'])
+    @pytest.mark.parametrize('password', ['', 'a', 'zxc', '123123'])
+    def test_negative_login_incorrect_data(self, email: str, password: str):
+        login_model = LoginModel(email=email, password=password)
+        response = Client().login(request=login_model, expected_model=NegativeLoginResponseModel(), status_code=400)
+        return response
 
-
+    @allure.title('[Api test] Get pets list by incorrect len')
+    @pytest.mark.negative
+    @pytest.mark.API
+    @allure.severity(allure.severity_level.NORMAL)
+    @pytest.mark.parametrize('email', [LoginPageSecond.LOGIN])
+    @pytest.mark.parametrize('password', [LoginPageSecond.PASSWORD])
+    @pytest.mark.parametrize('len_pet_list', ['qwe', '', -2, "!@#!@#"])
+    def test_pets_list_incorrect_len(self, email: str, password: str, len_pet_list: int):
+        with allure.step(f'Get list of {len_pet_list} pets for user {email}'):
+            pets_list, pets_list_status_code = PetsApi().get_pet_list(email=email, password=password,
+                                                                      len_pet_list=len_pet_list)
+        assert pets_list_status_code == 422
 # at = TestApi()
 # pets_list, _ = at.test_get_pets_list(email=LoginPageSecond.LOGIN,
 #                             password=LoginPageSecond.PASSWORD,
