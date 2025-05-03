@@ -1,6 +1,13 @@
-from typing import Optional
+from typing import Optional, Union
 import json
 from pydantic import BaseModel, Field
+
+#Components
+class NegativePetsListModelComponents(BaseModel):
+    loc: Optional[list]
+    msg: Optional[str]
+    type: Optional[str]
+    ctx: Optional[dict]
 
 
 # Request models
@@ -24,7 +31,7 @@ class CreatePetModel(BaseModel):
 
 class GetPetsListModel(BaseModel):
     skip: Optional[int] = 0
-    num: Optional[int]
+    num: Optional[Union[int, str]]
     user_id: Optional[int]
 
 
@@ -53,27 +60,11 @@ class PetInfoResponseModel(BaseModel):
 class NegativeLoginResponseModel(BaseModel):
     detail: Optional[str] = 'Username is taken or pass issue'
 
+
 class NegativePetsListModel(BaseModel):
-    detail: Optional[list] = [
-        {loc: Optional[]}
-    ]
-    # "detail": [
-    #     {
-    #         "loc": [
-    #             "body",
-    #             23
-    #         ],
-    #         "msg": "Expecting value: line 3 column 9 (char 23)",
-    #         "type": "value_error.jsondecode",
-    #         "ctx": {
-    #             "msg": "Expecting value",
-    #             "doc": "{\n  \"skip\": 0,\n  \"num\":'3',\n  \"user_id\": 5299\n}",
-    #             "pos": 23,
-    #             "lineno": 3,
-    #             "colno": 9
-    #         }
-    #     }
-    # ]
+    detail: Optional[list] = [NegativePetsListModelComponents]
+
+
 
 # class OuterResponseModel(BaseModel):
 #     class_ = Optional[str] = Field(..., alias='class')

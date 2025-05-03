@@ -1,3 +1,5 @@
+from typing import Union
+
 import allure
 import pytest
 from urllib3 import request
@@ -7,7 +9,7 @@ from api import PetsApi
 from client import Client
 from config import LoginPageSecond, LoginPageConfig
 from models.pet_models import PetResponseModel, LoginResponseModel, LoginModel, CreatePetModel, GetPetsListModel, \
-    PetListResponseModel, PetInfoResponseModel, NegativeLoginResponseModel
+    PetListResponseModel, PetInfoResponseModel, NegativeLoginResponseModel, NegativePetsListModel
 from valdate_response import ValidateResponse
 
 
@@ -18,7 +20,7 @@ class TestApi:
     @pytest.mark.positive
     @pytest.mark.API
     @allure.severity(allure.severity_level.CRITICAL)
-    @pytest.mark.parametrize('email', [LoginPageSecond.LOGIN])
+    @pytest.mark.parametrize('email', [LoginPageConfig.LOGIN])
     @pytest.mark.parametrize('password', [LoginPageSecond.PASSWORD])
     def test_login(self, email: str, password: str):
         login_model = LoginModel(email=email, password=password)
@@ -61,7 +63,7 @@ class TestApi:
     @pytest.mark.parametrize('email', [LoginPageSecond.LOGIN])
     @pytest.mark.parametrize('password', [LoginPageSecond.PASSWORD])
     @pytest.mark.parametrize('len_pet_list', [5])
-    def test_get_pets_list(self, email: str, password: str, len_pet_list: int):
+    def test_get_pets_list(self, email: str, password: str, len_pet_list: int, user_id: int = None):
         login_model = LoginModel(email=email, password=password)
         authorization_response = Client().login(request=login_model, expected_model=LoginResponseModel())
         headers = dict(Authorization=f'Bearer {authorization_response.token}')
@@ -69,7 +71,7 @@ class TestApi:
         pets_list_model = GetPetsListModel(
             skip=0,
             num=len_pet_list,
-            user_id=authorization_response.id)
+            user_id=authorization_response.id if not user_id else user_id)
 
         pets_list_response = Client().get_pets_list(request=pets_list_model,
                                                     expected_model=PetListResponseModel(
@@ -85,6 +87,7 @@ class TestApi:
                                                             likes_count=0,
                                                             liked_by_user=False)]),
                                                     headers=headers)
+        print(pets_list_response)
         return pets_list_response
 
     @allure.title('[Api test] Delete pet')
@@ -103,7 +106,6 @@ class TestApi:
 
         for pet_id in pets_id_list:
             Client().delete_pet(pet_id=pet_id, headers=headers)
-
 
     @allure.title('[Api test] Update pet info')
     @pytest.mark.positive
@@ -125,13 +127,9 @@ class TestApi:
         headers = dict(Authorization=f'Bearer {authorization_response.token}')
 
         for pet_id in pets_id_list:
-            pet_info_model = CreatePetModel(
-                                            id=pet_id,
-                                            name=pet_name,
-                                            type=pet_type,
-                                            age=pet_age,
-                                            gender=pet_gender,
-                                            owner_id=authorization_response.id)
+            pet_info_model = CreatePetModel(id=pet_id, name=pet_name,
+                                            type=pet_type, age=pet_age,
+                                            gender=pet_gender, owner_id=authorization_response.id)
             Client().update_pet(request=pet_info_model,
                                 expected_model=PetResponseModel(),
                                 headers=headers)
@@ -139,7 +137,6 @@ class TestApi:
             actual_pet_data = Client().get_pet(pet_id=pet_id, headers=headers)
             expected_pet_data = PetInfoResponseModel(pet=pet_info_model, comments=[])
             ValidateResponse.validate_response(response=actual_pet_data, model=expected_pet_data)
-
 
     @allure.title('[Api test] Like pet')
     @pytest.mark.positive
@@ -180,11 +177,54 @@ class TestApiNegative:
     @pytest.mark.parametrize('email', [LoginPageSecond.LOGIN])
     @pytest.mark.parametrize('password', [LoginPageSecond.PASSWORD])
     @pytest.mark.parametrize('len_pet_list', ['qwe', '', -2, "!@#!@#"])
-    def test_pets_list_incorrect_len(self, email: str, password: str, len_pet_list: int):
-        with allure.step(f'Get list of {len_pet_list} pets for user {email}'):
-            pets_list, pets_list_status_code = PetsApi().get_pet_list(email=email, password=password,
-                                                                      len_pet_list=len_pet_list)
-        assert pets_list_status_code == 422
+    def test_negative_pets_list_incorrect_len(self, email: str, password: str, len_pet_list: int):
+        login_model = LoginModel(email=email, password=password)
+        authorization_response = Client().login(request=login_model, expected_model=LoginResponseModel())
+        headers = dict(Authorization=f'Bearer {authorization_response.token}')
+
+        pets_list_model = GetPetsListModel(skip=0, num=len_pet_list, user_id=authorization_response.id)
+
+        pets_list_response = Client().get_pets_list(request=pets_list_model, expected_model=NegativePetsListModel(),
+                                                    headers=headers, status_code=422)
+        return pets_list_response
+
+    @allure.title('[Api test] Delete pet by incorrect id')
+    @pytest.mark.negative
+    @pytest.mark.API
+    @allure.severity(allure.severity_level.NORMAL)
+    @pytest.mark.parametrize('email', [LoginPageSecond.LOGIN])
+    @pytest.mark.parametrize('password', [LoginPageSecond.PASSWORD])
+    @pytest.mark.parametrize('pet_id', ['', 'a', -4, '!@#!@#'])
+    def test_negative_delete_pet(self, email: str, password: str, pet_id):
+        login_model = LoginModel(email=email, password=password)
+        authorization_response = Client().login(request=login_model, expected_model=LoginResponseModel())
+        headers = dict(Authorization=f'Bearer {authorization_response.token}')
+        Client().delete_pet(pet_id=pet_id, headers=headers, status_code=[422, 405])
+
+    @allure.title('Delete pet by id from other user')
+    @pytest.mark.negative
+    @allure.severity(allure.severity_level.CRITICAL)
+    @pytest.mark.parametrize('first_email', [LoginPageConfig.LOGIN])
+    @pytest.mark.parametrize('first_password', [LoginPageConfig.PASSWORD])
+    @pytest.mark.parametrize('second_email', [LoginPageSecond.LOGIN])
+    @pytest.mark.parametrize('second_password', [LoginPageSecond.PASSWORD])
+    @pytest.mark.parametrize('len_pet_list', [2])
+    def test_delete_pet_from_someone_account(self, first_email: str, first_password: str,
+                                             second_email: str, second_password: str, len_pet_list: int):
+        second_user_authorization_data = TestApi().test_login(email=second_email, password=second_password)
+
+        pets_id_list = generator.extract_pet_id(TestApi().test_get_pets_list(email=first_email, password=first_password,
+                                                                             len_pet_list=len_pet_list,
+                                                                             user_id=second_user_authorization_data.id))
+        login_model = LoginModel(email=first_email, password=first_password)
+        authorization_response = Client().login(request=login_model, expected_model=LoginResponseModel())
+        headers = dict(Authorization=f'Bearer {authorization_response.token}')
+
+        for pet_id in pets_id_list:
+            Client().delete_pet(pet_id=pet_id, headers=headers, status_code=403)
+
+
+
 # at = TestApi()
 # pets_list, _ = at.test_get_pets_list(email=LoginPageSecond.LOGIN,
 #                             password=LoginPageSecond.PASSWORD,
