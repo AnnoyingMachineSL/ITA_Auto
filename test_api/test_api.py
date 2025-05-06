@@ -1,16 +1,12 @@
-from typing import Union
-
 import allure
 import pytest
-from urllib3 import request
 
-import generator
-from api import PetsApi
+from utils import generator
 from client import Client
 from config import LoginPageSecond, LoginPageConfig
 from models.pet_models import PetResponseModel, LoginResponseModel, LoginModel, CreatePetModel, GetPetsListModel, \
     PetListResponseModel, PetInfoResponseModel, NegativeLoginResponseModel, NegativePetsListModel
-from valdate_response import ValidateResponse
+from utils.valdate_response import ValidateResponse
 
 
 @allure.title('[Positive] Api Tests')

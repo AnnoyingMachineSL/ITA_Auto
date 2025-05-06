@@ -1,13 +1,9 @@
 import allure
 import pytest
-from urllib3 import request
 
-import generator
+from utils import generator
 from api import PetsApi
-from client import Client
 from config import LoginPageSecond, LoginPageConfig
-from models.pet_models import PetResponseModel, LoginResponseModel, LoginModel, CreatePetModel, GetPetsListModel, \
-    PetListResponseModel
 
 
 @allure.title('[Positive] Api Tests')

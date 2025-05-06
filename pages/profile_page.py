@@ -46,6 +46,9 @@ class ProfilePage(BasePage):
     def click_profile_button(self):
         self.PROFILE_BUTTON.click()
 
+    def edit_pet_from_list(self, num):
+        self.PET_UNITS.nth(num).get_by_text('Edit').click()
+
     def delete_pet_from_list(self, num):
         self.PET_UNITS.nth(num).get_by_text('Delete').click()
 

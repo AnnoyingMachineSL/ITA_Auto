@@ -17,3 +17,11 @@ def login(playwright):
     login_page.fill_login_field(LoginPageConfig.LOGIN)
     login_page.click_submit_button()
     return page
+
+
+@pytest.fixture()
+def open_chrome(playwright):
+    browser = playwright.chromium.launch(headless=False)
+    context = browser.new_context()
+    page = context.new_page()
+    return page

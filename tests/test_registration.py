@@ -1,9 +1,13 @@
-import allure
-import pytest
-from playwright.sync_api import expect
-import generator
-from pages.registration_page import RegistrationPage
 import time
+
+import allure
+import playwright
+import pytest
+from playwright.sync_api import sync_playwright
+from client import Client
+from models.pet_models import LoginModel, LoginResponseModel
+from utils import generator
+from pages.registration_page import RegistrationPage
 
 
 @allure.title('[Positive Test] Registration')
@@ -12,17 +16,19 @@ class TestRegistration:
     @pytest.mark.positive
     @allure.title('Correct data for registration')
     @allure.description('Registration using correct format of login and password')
-    def test_registration(self, page):
-        page = RegistrationPage(page)
+    def test_registration(self, open_chrome, page):
+        page = RegistrationPage(open_chrome)
 
         with allure.step('Open registration page'):
             page.open_page(page.REGISTRATION_PAGE_URL)
 
         random_email = generator.random_email()
+        print(random_email)
         with allure.step(f'Fill email field by {random_email}'):
             page.fill_login_field(generator.random_email())
 
         password = generator.random_password()
+        print(password)
         with allure.step(f'Fill password and confirm password field by {password}'):
             page.fill_password_field(password)
             page.fill_confirm_field(password)
@@ -35,6 +41,11 @@ class TestRegistration:
 
         with allure.step('Check the correct redirection after registration'):
             page.check_profile_page()
+            page.click_main_page_button()
+
+        with allure.step('[POST /login] Authorization'):
+            Client().login(request=LoginModel(email=random_email, password=password),
+                                                    expected_model=LoginResponseModel(), status_code=200)
 
 
 @allure.title('[Negative Test] Registration')

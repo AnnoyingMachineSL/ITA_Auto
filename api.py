@@ -1,10 +1,6 @@
 import requests
 import json
 
-import generator
-from config import LoginPageConfig, LoginPageSecond
-from pprint import pprint
-
 
 class PetsApi:
     def __init__(self):

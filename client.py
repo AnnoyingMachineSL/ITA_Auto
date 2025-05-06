@@ -3,12 +3,11 @@ from typing import Union
 import allure
 import requests
 
-from allure_helper import AllureHelper
+from utils.allure_helper import AllureHelper
 from models.pet_models import LoginModel, LoginResponseModel, CreatePetModel, PetResponseModel, GetPetsListModel, \
     PetListResponseModel, NegativeLoginResponseModel, NegativePetsListModel
-from valdate_response import ValidateResponse
+from utils.valdate_response import ValidateResponse
 # from dotenv import load_dotenv
-import os
 
 
 class ClientApi:
@@ -36,6 +35,7 @@ class Client(ClientApi):
     def login(self, request: LoginModel, expected_model: Union[LoginResponseModel, NegativeLoginResponseModel],
               status_code: int = 200):
         response = self.request(method='post', url='login', json=request.model_dump())
+        #AllureHelper().enrich_allure(response=response)
         return ValidateResponse.validate_response(response=response, model=expected_model, status_code=status_code)
 
     @allure.step('POST /pet')
@@ -67,9 +67,9 @@ class Client(ClientApi):
     @allure.step('GET /pet')
     def get_pet(self, pet_id: int, headers, status_code: int = 200):
         response = self.request(method='get', url=f'pet/{pet_id}', headers=headers)
-        return ValidateResponse.validate_status_code(response=response, expected_status_code=200)
+        return ValidateResponse.validate_status_code(response=response, expected_status_code=status_code)
 
     @allure.step('PUT /pet/like')
     def like_pet(self, pet_id: int, headers, status_code: int = 200):
         response = self.request(method='put', url=f'pet/{pet_id}/like', headers=headers)
-        return ValidateResponse.validate_status_code(response=response, expected_status_code=200)
+        return ValidateResponse.validate_status_code(response=response, expected_status_code=status_code)

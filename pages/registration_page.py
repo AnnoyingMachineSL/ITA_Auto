@@ -16,7 +16,8 @@ class RegistrationPage(BasePage):
         self.SOMETHING_WENT_WRONG_MESSAGE = page.locator('//*[@id="pv_id_2_content"]/div/div/div')
         self.REGISTRATION_LOGO = page.locator('//*[@id="app"]/main/fieldset/legend')
         self.SUBMIT_BUTTON = page.locator('//*[@id="pv_id_2_content"]/div/form/div[4]/button')
-
+        self.PROFILE_BUTTON = page.get_by_text('Profile')
+        self.MAIN_PAGE_BUTTON = page.locator('//*[@id="app"]/header/div/div/img')
 
     def fill_login_field(self, login):
         self.LOGIN_FIELD.fill(login)
@@ -47,3 +48,9 @@ class RegistrationPage(BasePage):
 
     def click_submit_button(self):
         self.SUBMIT_BUTTON.click()
+
+    def click_profile_button(self):
+        self.PROFILE_BUTTON.click()
+
+    def click_main_page_button(self):
+        self.MAIN_PAGE_BUTTON.click()
